@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -27,7 +27,7 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <BrowserRouter basename="/apiforge-lab">
+    <HashRouter>
       <div className="min-h-screen flex flex-col bg-surface">
         <Navbar />
         <main className="flex-1">
@@ -35,7 +35,7 @@ function App() {
         </main>
         <Footer />
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

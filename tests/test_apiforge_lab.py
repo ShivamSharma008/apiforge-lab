@@ -12,14 +12,22 @@ from playwright.sync_api import Page, expect
 BASE_URL = "http://localhost:5173"
 
 
+def go(page: Page, hash_path=""):
+    """Navigate to a hash-based route. Works with both local and live URLs."""
+    base = page.context.browser.contexts[0]._impl_obj._browser._options.get("baseUrl", BASE_URL)
+    url = f"{page.url.split('#')[0]}#{hash_path}" if hash_path else page.url.split('#')[0]
+    page.goto(url)
+    page.wait_for_load_state("networkidle")
+
+
 # ============================================================
 # CONFTEST / FIXTURES
 # ============================================================
 
 @pytest.fixture(autouse=True)
-def setup(page: Page):
+def setup(page: Page, base_url):
     """Navigate to base URL and wait for load before each test."""
-    page.goto(BASE_URL)
+    page.goto(base_url or BASE_URL)
     page.wait_for_load_state("networkidle")
 
 
@@ -100,10 +108,10 @@ class TestLandingPage:
         expect(btn).to_be_visible()
 
     def test_explore_platform_navigates_to_dashboard(self, page: Page):
-        """Click 'Explore Platform' and verify it navigates to /dashboard."""
+        """Click 'Explore Platform' and verify it navigates to #/dashboard."""
         page.locator("text=Explore Platform").first.click()
         page.wait_for_load_state("networkidle")
-        expect(page).to_have_url(re.compile(r"/dashboard"))
+        expect(page).to_have_url(re.compile(r"#/dashboard"))
 
 
 # ============================================================
@@ -134,31 +142,31 @@ class TestNavbar:
         """Click API Playground nav link and verify navigation."""
         page.locator("nav >> text=API Playground").first.click()
         page.wait_for_load_state("networkidle")
-        expect(page).to_have_url(re.compile(r"/api-playground"))
+        expect(page).to_have_url(re.compile(r"#/api-playground"))
 
     def test_nav_link_db_sandbox(self, page: Page):
         """Click DB Sandbox nav link and verify navigation."""
         page.locator("nav >> text=DB Sandbox").first.click()
         page.wait_for_load_state("networkidle")
-        expect(page).to_have_url(re.compile(r"/db-sandbox"))
+        expect(page).to_have_url(re.compile(r"#/db-sandbox"))
 
     def test_nav_link_workflows(self, page: Page):
         """Click Workflows nav link and verify navigation."""
         page.locator("nav >> text=Workflows").first.click()
         page.wait_for_load_state("networkidle")
-        expect(page).to_have_url(re.compile(r"/workflows"))
+        expect(page).to_have_url(re.compile(r"#/workflows"))
 
     def test_nav_link_events(self, page: Page):
         """Click Events nav link and verify navigation."""
         page.locator("nav >> text=Events").first.click()
         page.wait_for_load_state("networkidle")
-        expect(page).to_have_url(re.compile(r"/events"))
+        expect(page).to_have_url(re.compile(r"#/events"))
 
     def test_nav_link_dashboard(self, page: Page):
         """Click Dashboard nav link and verify navigation."""
         page.locator("nav >> text=Dashboard").first.click()
         page.wait_for_load_state("networkidle")
-        expect(page).to_have_url(re.compile(r"/dashboard"))
+        expect(page).to_have_url(re.compile(r"#/dashboard"))
 
     def test_nav_link_home(self, page: Page):
         """Navigate away then click Home to return to landing page."""
@@ -166,7 +174,7 @@ class TestNavbar:
         page.wait_for_load_state("networkidle")
         page.locator("nav >> text=Home").first.click()
         page.wait_for_load_state("networkidle")
-        expect(page).to_have_url(re.compile(r"/$"))
+        expect(page).to_have_url(re.compile(r"#/$"))
 
 
 # ============================================================
@@ -177,8 +185,8 @@ class TestApiPlayground:
     """Tests for the API Playground page."""
 
     @pytest.fixture(autouse=True)
-    def navigate(self, page: Page):
-        page.goto(f"{BASE_URL}/api-playground")
+    def navigate(self, page: Page, base_url):
+        page.goto(f"{base_url}#/api-playground")
         page.wait_for_load_state("networkidle")
 
     def test_page_heading(self, page: Page):
@@ -258,8 +266,8 @@ class TestDbSandbox:
     """Tests for the Database Sandbox page."""
 
     @pytest.fixture(autouse=True)
-    def navigate(self, page: Page):
-        page.goto(f"{BASE_URL}/db-sandbox")
+    def navigate(self, page: Page, base_url):
+        page.goto(f"{base_url}#/db-sandbox")
         page.wait_for_load_state("networkidle")
 
     def test_page_heading(self, page: Page):
@@ -372,8 +380,8 @@ class TestWorkflows:
     """Tests for the Workflows page."""
 
     @pytest.fixture(autouse=True)
-    def navigate(self, page: Page):
-        page.goto(f"{BASE_URL}/workflows")
+    def navigate(self, page: Page, base_url):
+        page.goto(f"{base_url}#/workflows")
         page.wait_for_load_state("networkidle")
 
     def test_workflow_catalog_heading(self, page: Page):
@@ -445,8 +453,8 @@ class TestEvents:
     """Tests for the Event Simulator page."""
 
     @pytest.fixture(autouse=True)
-    def navigate(self, page: Page):
-        page.goto(f"{BASE_URL}/events")
+    def navigate(self, page: Page, base_url):
+        page.goto(f"{base_url}#/events")
         page.wait_for_load_state("networkidle")
 
     def test_page_heading(self, page: Page):
@@ -532,8 +540,8 @@ class TestDashboard:
     """Tests for the Dashboard page."""
 
     @pytest.fixture(autouse=True)
-    def navigate(self, page: Page):
-        page.goto(f"{BASE_URL}/dashboard")
+    def navigate(self, page: Page, base_url):
+        page.goto(f"{base_url}#/dashboard")
         page.wait_for_load_state("networkidle")
 
     def test_welcome_heading(self, page: Page):
@@ -624,91 +632,91 @@ class TestCrossPage:
     def test_full_navigation_flow(self, page: Page):
         """Navigate through all pages sequentially."""
         routes = [
-            ("API Playground", "/api-playground"),
-            ("DB Sandbox", "/db-sandbox"),
-            ("Workflows", "/workflows"),
-            ("Events", "/events"),
-            ("Dashboard", "/dashboard"),
-            ("Home", "/"),
+            ("API Playground", "#/api-playground"),
+            ("DB Sandbox", "#/db-sandbox"),
+            ("Workflows", "#/workflows"),
+            ("Events", "#/events"),
+            ("Dashboard", "#/dashboard"),
+            ("Home", "#/"),
         ]
         for link_text, expected_path in routes:
             page.locator(f"nav >> text={link_text}").first.click()
             page.wait_for_load_state("networkidle")
             expect(page).to_have_url(re.compile(re.escape(expected_path)))
 
-    def test_no_console_errors_on_landing(self, page: Page):
+    def test_no_console_errors_on_landing(self, page: Page, base_url):
         """Verify no JavaScript console errors on the landing page."""
         errors = []
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
-        page.goto(BASE_URL)
+        page.goto(base_url)
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         # Filter out known non-critical errors (e.g., favicon, HMR)
         critical_errors = [e for e in errors if "favicon" not in e.lower() and "hmr" not in e.lower()]
         assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
 
-    def test_no_console_errors_on_api_playground(self, page: Page):
+    def test_no_console_errors_on_api_playground(self, page: Page, base_url):
         """Verify no JavaScript console errors on API Playground."""
         errors = []
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
-        page.goto(f"{BASE_URL}/api-playground")
+        page.goto(f"{base_url}#/api-playground")
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         critical_errors = [e for e in errors if "favicon" not in e.lower() and "hmr" not in e.lower()]
         assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
 
-    def test_no_console_errors_on_db_sandbox(self, page: Page):
+    def test_no_console_errors_on_db_sandbox(self, page: Page, base_url):
         """Verify no JavaScript console errors on DB Sandbox."""
         errors = []
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
-        page.goto(f"{BASE_URL}/db-sandbox")
+        page.goto(f"{base_url}#/db-sandbox")
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         critical_errors = [e for e in errors if "favicon" not in e.lower() and "hmr" not in e.lower()]
         assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
 
-    def test_no_console_errors_on_workflows(self, page: Page):
+    def test_no_console_errors_on_workflows(self, page: Page, base_url):
         """Verify no JavaScript console errors on Workflows."""
         errors = []
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
-        page.goto(f"{BASE_URL}/workflows")
+        page.goto(f"{base_url}#/workflows")
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         critical_errors = [e for e in errors if "favicon" not in e.lower() and "hmr" not in e.lower()]
         assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
 
-    def test_no_console_errors_on_events(self, page: Page):
+    def test_no_console_errors_on_events(self, page: Page, base_url):
         """Verify no JavaScript console errors on Events."""
         errors = []
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
-        page.goto(f"{BASE_URL}/events")
+        page.goto(f"{base_url}#/events")
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         critical_errors = [e for e in errors if "favicon" not in e.lower() and "hmr" not in e.lower()]
         assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
 
-    def test_no_console_errors_on_dashboard(self, page: Page):
+    def test_no_console_errors_on_dashboard(self, page: Page, base_url):
         """Verify no JavaScript console errors on Dashboard."""
         errors = []
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
-        page.goto(f"{BASE_URL}/dashboard")
+        page.goto(f"{base_url}#/dashboard")
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         critical_errors = [e for e in errors if "favicon" not in e.lower() and "hmr" not in e.lower()]
         assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
 
-    def test_responsive_viewport_mobile(self, page: Page):
+    def test_responsive_viewport_mobile(self, page: Page, base_url):
         """Verify the app renders on mobile viewport without crashing."""
         page.set_viewport_size({"width": 375, "height": 812})
-        page.goto(BASE_URL)
+        page.goto(base_url)
         page.wait_for_load_state("networkidle")
         heading = page.locator("h1").first
         expect(heading).to_be_visible()
 
-    def test_responsive_viewport_tablet(self, page: Page):
+    def test_responsive_viewport_tablet(self, page: Page, base_url):
         """Verify the app renders on tablet viewport without crashing."""
         page.set_viewport_size({"width": 768, "height": 1024})
-        page.goto(BASE_URL)
+        page.goto(base_url)
         page.wait_for_load_state("networkidle")
         heading = page.locator("h1").first
         expect(heading).to_be_visible()
