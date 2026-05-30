@@ -6,8 +6,6 @@ import {
   RotateCcw,
   UserPlus,
   ShieldCheck,
-  CheckCircle2,
-  XCircle,
   Database,
   CreditCard,
   Package,
@@ -17,7 +15,6 @@ import {
   Search,
   BookCheck,
   Upload,
-  FileSpreadsheet,
   Filter,
   BarChart3,
   Circle,
@@ -25,12 +22,8 @@ import {
   Activity,
   Clock,
   TrendingUp,
-  Zap,
-  AlertTriangle,
   Info,
-  ChevronRight,
   Layers,
-  Send,
 } from 'lucide-react';
 
 /* ══════════════════════════════════════════════════════════════
@@ -223,6 +216,9 @@ const timestamp = () => {
   return d.toLocaleTimeString('en-US', { hour12: false }) + '.' + String(d.getMilliseconds()).padStart(3, '0');
 };
 
+const createInitialNodeStatuses = (workflow) =>
+  workflow.nodes.reduce((acc, node) => ({ ...acc, [node.id]: 'pending' }), {});
+
 /* ══════════════════════════════════════════════════════════════
    COMPONENTS
    ══════════════════════════════════════════════════════════════ */
@@ -342,7 +338,7 @@ function AnimatedEdge({ fromNode, toNode, edgeStatus }) {
 
 export default function Workflows() {
   const [selected, setSelected] = useState(WORKFLOWS[0]);
-  const [nodeStatuses, setNodeStatuses] = useState({});
+  const [nodeStatuses, setNodeStatuses] = useState(() => createInitialNodeStatuses(WORKFLOWS[0]));
   const [selectedNode, setSelectedNode] = useState(null);
   const [running, setRunning] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -350,19 +346,6 @@ export default function Workflows() {
   const pausedRef = useRef(false);
   const runningRef = useRef(false);
   const logEndRef = useRef(null);
-
-  // initialise statuses when workflow changes
-  useEffect(() => {
-    const init = {};
-    selected.nodes.forEach((n) => (init[n.id] = 'pending'));
-    setNodeStatuses(init);
-    setSelectedNode(null);
-    setLogs([]);
-    setRunning(false);
-    setPaused(false);
-    pausedRef.current = false;
-    runningRef.current = false;
-  }, [selected]);
 
   // auto-scroll logs
   useEffect(() => {
@@ -396,9 +379,7 @@ export default function Workflows() {
     setPaused(false);
     pausedRef.current = false;
 
-    const init = {};
-    selected.nodes.forEach((n) => (init[n.id] = 'pending'));
-    setNodeStatuses(init);
+    setNodeStatuses(createInitialNodeStatuses(selected));
     setLogs([]);
 
     let logIdx = 0;
@@ -438,12 +419,21 @@ export default function Workflows() {
     setRunning(false);
     setPaused(false);
     pausedRef.current = false;
-    const init = {};
-    selected.nodes.forEach((n) => (init[n.id] = 'pending'));
-    setNodeStatuses(init);
+    setNodeStatuses(createInitialNodeStatuses(selected));
     setSelectedNode(null);
     setLogs([]);
   }, [selected]);
+
+  const selectWorkflow = useCallback((workflow) => {
+    runningRef.current = false;
+    pausedRef.current = false;
+    setSelected(workflow);
+    setNodeStatuses(createInitialNodeStatuses(workflow));
+    setSelectedNode(null);
+    setLogs([]);
+    setRunning(false);
+    setPaused(false);
+  }, []);
 
   const togglePause = useCallback(() => {
     setPaused((p) => {
@@ -488,7 +478,7 @@ export default function Workflows() {
                 key={wf.id}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
-                onClick={() => setSelected(wf)}
+                onClick={() => selectWorkflow(wf)}
                 className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${
                   selected.id === wf.id
                     ? 'border-primary bg-primary/10 glow-primary'

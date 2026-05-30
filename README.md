@@ -66,6 +66,30 @@ npm run build
 npm run preview
 ```
 
+## ✅ Testing Locally
+
+Use the production preview for the most stable end-to-end test run:
+
+```bash
+npm install
+npm run build
+npm run preview -- --host 127.0.0.1 --port 4173
+python -m pytest tests -q --base-url http://127.0.0.1:4173/apiforge-lab/
+```
+
+The suite covers navigation, page rendering, API playground requests, database
+queries, workflow execution, event publishing, dashboard health checks, footer
+links, and responsive smoke tests.
+
+## 🧭 Recommended Learning Path
+
+1. Open **Dashboard** to understand the platform health and entry points.
+2. Use **API Playground** to send a mock REST request and inspect the response.
+3. Use **Database Sandbox** to run SQL shortcuts and compare results with schemas.
+4. Use **Events** to publish Kafka/MQTT payloads and inspect the live stream.
+5. Use **Workflows** to watch a BPMN-style process execute step by step.
+6. Review **Docs**, **Architecture**, and **API Reference** to extend scenarios.
+
 ## 🌐 Deploy to GitHub Pages
 
 ```bash

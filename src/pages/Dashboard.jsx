@@ -3,11 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import {
   Zap, Database, GitBranch, Radio, Plus, Play, Workflow,
-  Clock, ArrowUpRight, CheckCircle2, XCircle, AlertTriangle,
-  Circle, Activity
+  Clock, ArrowUpRight, CheckCircle2, XCircle, Activity
 } from 'lucide-react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
+  XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Area, AreaChart
 } from 'recharts';
 

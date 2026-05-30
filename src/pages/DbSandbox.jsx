@@ -16,8 +16,6 @@ import {
   History,
   Columns3,
   LayoutList,
-  Copy,
-  Check,
   X,
   Zap,
   Key,

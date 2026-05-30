@@ -10,7 +10,6 @@ import {
   Filter,
   X,
   CheckCircle2,
-  Circle,
   ChevronDown,
   Activity,
   Zap,
@@ -19,7 +18,6 @@ import {
   Eye,
   ToggleLeft,
   ToggleRight,
-  Copy,
   ArrowLeft,
 } from 'lucide-react';
 import {
@@ -209,11 +207,11 @@ export default function Events() {
   const [kafkaTopic, setKafkaTopic] = useState(KAFKA_TOPICS[0]);
   const [kafkaPartition, setKafkaPartition] = useState(0);
   const [kafkaKey, setKafkaKey] = useState('');
-  const [kafkaPayload, setKafkaPayload] = useState('');
+  const [kafkaPayload, setKafkaPayload] = useState(() => JSON.stringify(topicPayload(KAFKA_TOPICS[0]), null, 2));
   const [mqttTopic, setMqttTopic] = useState('devices/sensor-001/temperature');
   const [mqttQos, setMqttQos] = useState(0);
   const [mqttRetain, setMqttRetain] = useState(false);
-  const [mqttPayload, setMqttPayload] = useState('');
+  const [mqttPayload, setMqttPayload] = useState(() => JSON.stringify({ sensorId: 'sensor-001', value: 24.5, unit: '°C', ts: Date.now() }, null, 2));
   const [publishing, setPublishing] = useState(false);
 
   // Toast
@@ -233,15 +231,6 @@ export default function Events() {
     { p: 'P0', v: 0 }, { p: 'P1', v: 0 }, { p: 'P2', v: 0 }, { p: 'P3', v: 0 },
   ]);
   const epsCounter = useRef(0);
-
-  // Set default payloads
-  useEffect(() => {
-    setKafkaPayload(JSON.stringify(topicPayload(kafkaTopic), null, 2));
-  }, [kafkaTopic]);
-
-  useEffect(() => {
-    setMqttPayload(JSON.stringify({ sensorId: 'sensor-001', value: 24.5, unit: '°C', ts: Date.now() }, null, 2));
-  }, []);
 
   // Auto-generate events
   useEffect(() => {
@@ -277,6 +266,11 @@ export default function Events() {
     const set = new Set(events.map((e) => e.topic));
     return ['all', ...set];
   }, [events]);
+
+  const handleKafkaTopicChange = useCallback((topic) => {
+    setKafkaTopic(topic);
+    setKafkaPayload(JSON.stringify(topicPayload(topic), null, 2));
+  }, []);
 
   const filteredEvents = useMemo(() => {
     if (filterTopic === 'all') return events;
@@ -366,7 +360,7 @@ export default function Events() {
                   {pubTab === 'kafka' ? (
                     <motion.div key="kafka" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <Dropdown label="Topic" value={kafkaTopic} onChange={setKafkaTopic} options={KAFKA_TOPICS} />
+                        <Dropdown label="Topic" value={kafkaTopic} onChange={handleKafkaTopicChange} options={KAFKA_TOPICS} />
                         <Dropdown label="Partition" value={String(kafkaPartition)} onChange={(v) => setKafkaPartition(Number(v))} options={['0', '1', '2', '3']} />
                         <div>
                           <label className="block text-xs text-text-secondary mb-1">Key</label>

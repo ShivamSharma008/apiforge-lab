@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
+import heroImage from '../assets/hero.png';
 import {
   Zap,
   Database,
@@ -53,32 +54,19 @@ function Section({ children, className = '', id }) {
   );
 }
 
-/* ───────────────────── floating orbs ───────────────────── */
-const orbs = [
-  { size: 320, x: '10%', y: '15%', color: 'rgba(99,102,241,0.12)', duration: 18 },
-  { size: 240, x: '75%', y: '10%', color: 'rgba(6,182,212,0.10)', duration: 22 },
-  { size: 180, x: '60%', y: '70%', color: 'rgba(16,185,129,0.08)', duration: 20 },
-  { size: 260, x: '25%', y: '80%', color: 'rgba(99,102,241,0.07)', duration: 25 },
-];
-
-function FloatingOrbs() {
+function HeroBackdrop() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {orbs.map((o, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full blur-3xl"
-          style={{
-            width: o.size,
-            height: o.size,
-            left: o.x,
-            top: o.y,
-            background: o.color,
-          }}
-          animate={{ y: [0, -30, 0], x: [0, 15, 0], scale: [1, 1.08, 1] }}
-          transition={{ duration: o.duration, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      ))}
+      <div
+        className="absolute inset-0 opacity-35"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(168,179,194,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(168,179,194,0.08) 1px, transparent 1px)',
+          backgroundSize: '56px 56px',
+        }}
+      />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-surface to-transparent" />
     </div>
   );
 }
@@ -114,10 +102,10 @@ fetch('/api/v1/users', {
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
-      <FloatingOrbs />
+    <section className="relative min-h-[82svh] flex items-center overflow-hidden border-b border-surface-lighter/40">
+      <HeroBackdrop />
 
-      <div className="relative z-10 mx-auto max-w-7xl w-full grid lg:grid-cols-2 gap-12 px-6 py-20">
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[0.9fr_1.1fr]">
         {/* left */}
         <motion.div
           className="flex flex-col justify-center"
@@ -136,7 +124,7 @@ fetch('/api/v1/users', {
           <motion.h1
             variants={fadeUp}
             custom={1}
-            className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight"
+            className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight"
           >
             <span className="gradient-text">Build. Test.</span>
             <br />
@@ -185,31 +173,56 @@ fetch('/api/v1/users', {
           </motion.div>
         </motion.div>
 
-        {/* right — code snippet */}
+        {/* right — product scene */}
         <motion.div
           className="hidden lg:flex items-center justify-center"
           initial={{ opacity: 0, x: 60 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <motion.div
-            className="w-full max-w-lg animate-float"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <div className="rounded-xl border border-surface-lighter bg-[#0d1117] shadow-2xl shadow-primary/10">
-              {/* title bar */}
-              <div className="flex items-center gap-2 border-b border-surface-lighter px-4 py-2.5">
-                <span className="h-3 w-3 rounded-full bg-danger" />
-                <span className="h-3 w-3 rounded-full bg-warning" />
-                <span className="h-3 w-3 rounded-full bg-success" />
-                <span className="ml-3 text-xs text-text-muted">api-request.js</span>
+          <div className="relative w-full max-w-xl">
+            <motion.img
+              src={heroImage}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-8 -top-10 h-36 w-36 opacity-35"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.div
+              className="relative animate-float"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <div className="rounded-lg border border-surface-lighter bg-[#080b10] shadow-2xl shadow-primary/10">
+                <div className="flex items-center gap-2 border-b border-surface-lighter px-4 py-2.5">
+                  <span className="h-3 w-3 rounded-full bg-danger" />
+                  <span className="h-3 w-3 rounded-full bg-warning" />
+                  <span className="h-3 w-3 rounded-full bg-success" />
+                  <span className="ml-3 text-xs text-text-muted">api-request.js</span>
+                  <span className="ml-auto rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[10px] font-semibold text-success">
+                    201 CREATED
+                  </span>
+                </div>
+                <pre className="code-editor max-h-[480px] overflow-x-auto p-4 text-xs leading-relaxed">
+                  <code className="text-text-secondary">{codeSnippet}</code>
+                </pre>
               </div>
-              <pre className="code-editor overflow-x-auto p-4 text-xs leading-relaxed">
-                <code className="text-text-secondary">{codeSnippet}</code>
-              </pre>
+            </motion.div>
+            <div className="relative z-10 mt-4 grid grid-cols-4 gap-3 rounded-lg border border-surface-lighter bg-surface-light/80 p-3 shadow-xl shadow-black/20 backdrop-blur">
+              {[
+                ['99.9%', 'Gateway uptime'],
+                ['83ms', 'Avg mock latency'],
+                ['8', 'Ready endpoints'],
+                ['Live', 'Event stream'],
+              ].map(([value, label]) => (
+                <div key={label} className="rounded-md bg-surface/80 px-3 py-2">
+                  <p className="text-base font-bold text-text-primary">{value}</p>
+                  <p className="text-[11px] text-text-secondary">{label}</p>
+                </div>
+              ))}
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
@@ -304,6 +317,78 @@ function Features() {
             </motion.div>
           );
         })}
+      </div>
+    </Section>
+  );
+}
+
+/* ───────────────── 2B. LEARNING PATH ───────────────── */
+const learningPath = [
+  {
+    title: 'Send a Mock API',
+    detail: 'Choose an endpoint, add headers, send, and inspect status, time, body, and response headers.',
+    to: '/api-playground',
+    icon: Zap,
+    accent: 'text-primary-light',
+  },
+  {
+    title: 'Run a Database Query',
+    detail: 'Try SQL shortcuts, inspect schemas, sort returned rows, and review query history.',
+    to: '/db-sandbox',
+    icon: Database,
+    accent: 'text-accent',
+  },
+  {
+    title: 'Watch Systems React',
+    detail: 'Publish Kafka or MQTT events, run a workflow, then verify live metrics on the dashboard.',
+    to: '/events',
+    icon: Workflow,
+    accent: 'text-success',
+  },
+];
+
+function LearningPath() {
+  return (
+    <Section className="border-y border-surface-lighter/40 bg-surface-light/30">
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+        <motion.div variants={fadeUp}>
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-light">
+            Guided learning flow
+          </p>
+          <h2 className="text-3xl font-bold text-text-primary sm:text-4xl">
+            Learn API testing by doing the real workflow.
+          </h2>
+          <p className="mt-4 max-w-xl text-text-secondary">
+            The app now points learners toward a simple end-to-end path: request, data,
+            event, workflow, and dashboard verification.
+          </p>
+        </motion.div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {learningPath.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={item.title}
+                variants={fadeUp}
+                custom={index + 1}
+                className="rounded-lg border border-surface-lighter bg-surface/70 p-5"
+              >
+                <div className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-surface-lighter ${item.accent}`}>
+                  <Icon size={20} />
+                </div>
+                <h3 className="text-base font-semibold text-text-primary">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-secondary">{item.detail}</p>
+                <Link
+                  to={item.to}
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary-light hover:text-accent"
+                >
+                  Open lab <ArrowRight size={15} />
+                </Link>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </Section>
   );
@@ -631,6 +716,7 @@ export default function Landing() {
     <main className="bg-surface min-h-screen">
       <Hero />
       <Features />
+      <LearningPath />
       <Architecture />
       <ScenarioDemo />
       <TechStack />
