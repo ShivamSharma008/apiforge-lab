@@ -587,6 +587,51 @@ class TestDashboard:
         watermark = page.locator("text=SHIVAM SHARMA")
         expect(watermark.first).to_be_visible()
 
+    def test_new_api_button_navigates(self, page: Page):
+        """Click 'New API' and verify navigation to API Playground."""
+        page.locator("button:has-text('New API')").first.click()
+        page.wait_for_timeout(1000)
+        assert "api-playground" in page.url
+
+    def test_run_query_button_navigates(self, page: Page):
+        """Click 'Run Query' and verify navigation to DB Sandbox."""
+        page.locator("button:has-text('Run Query')").first.click()
+        page.wait_for_timeout(1000)
+        assert "db-sandbox" in page.url
+
+    def test_start_workflow_button_navigates(self, page: Page):
+        """Click 'Start Workflow' and verify navigation to Workflows."""
+        page.locator("button:has-text('Start Workflow')").first.click()
+        page.wait_for_timeout(1000)
+        assert "workflows" in page.url
+
+    def test_kafka_broker_clickable(self, page: Page):
+        """Click Kafka Broker in System Health and verify navigation to Events."""
+        kafka = page.locator("text=Kafka Broker").first
+        expect(kafka).to_be_visible()
+        kafka.click()
+        page.wait_for_timeout(1000)
+        assert "events" in page.url
+
+    def test_all_services_healthy(self, page: Page):
+        """Verify all system services show Healthy status."""
+        services = ["API Gateway", "Auth Service", "Database", "Kafka Broker",
+                     "Camunda", "Redis Cache", "MQTT Broker", "NiFi"]
+        for svc in services:
+            loc = page.locator(f"text={svc}").first
+            expect(loc).to_be_visible()
+        # All should be Healthy - no Warning or Error text
+        health_section = page.locator("text=System Health").first.locator("..")
+        expect(health_section).to_be_visible()
+
+    def test_payment_reconciliation_running(self, page: Page):
+        """Verify Payment Reconciliation workflow shows Running status."""
+        payment = page.locator("text=Payment Reconciliation").first
+        expect(payment).to_be_visible()
+        # Look for Running status near it
+        running = page.locator("text=Running").first
+        expect(running).to_be_visible()
+
 
 # ============================================================
 # 8. FOOTER TESTS

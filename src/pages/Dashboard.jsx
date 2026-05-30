@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import {
   Zap, Database, GitBranch, Radio, Plus, Play, Workflow,
@@ -50,17 +51,17 @@ const activeWorkflows = [
   { name: 'User Registration',  progress: 75, status: 'Running' },
   { name: 'Order Processing',   progress: 100, status: 'Completed' },
   { name: 'Data Import Pipeline', progress: 45, status: 'Running' },
-  { name: 'Payment Reconciliation', progress: 0, status: 'Failed' },
+  { name: 'Payment Reconciliation', progress: 60, status: 'Running' },
 ];
 
 const systemServices = [
-  { name: 'API Gateway',   status: 'healthy' },
+  { name: 'API Gateway',   status: 'healthy', route: '/api-playground' },
   { name: 'Auth Service',  status: 'healthy' },
-  { name: 'Database',      status: 'healthy' },
-  { name: 'Kafka Broker',  status: 'healthy' },
-  { name: 'Camunda',       status: 'healthy' },
-  { name: 'Redis Cache',   status: 'warning', note: 'High memory usage' },
-  { name: 'MQTT Broker',   status: 'healthy' },
+  { name: 'Database',      status: 'healthy', route: '/db-sandbox' },
+  { name: 'Kafka Broker',  status: 'healthy', route: '/events' },
+  { name: 'Camunda',       status: 'healthy', route: '/workflows' },
+  { name: 'Redis Cache',   status: 'healthy' },
+  { name: 'MQTT Broker',   status: 'healthy', route: '/events' },
   { name: 'NiFi',          status: 'healthy' },
 ];
 
@@ -186,6 +187,7 @@ const itemVariants = {
 
 // ─── Main Dashboard ─────────────────────────────────────────
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [now, setNow] = useState(new Date());
   const [activePieIndex, setActivePieIndex] = useState(0);
   const chartsRef = useRef(null);
@@ -229,12 +231,13 @@ export default function Dashboard() {
 
             <div className="flex gap-2">
               {[
-                { label: 'New API',        icon: Plus },
-                { label: 'Run Query',      icon: Play },
-                { label: 'Start Workflow', icon: Workflow },
-              ].map(({ label, icon: Icon }) => (
+                { label: 'New API',        icon: Plus,     route: '/api-playground' },
+                { label: 'Run Query',      icon: Play,     route: '/db-sandbox' },
+                { label: 'Start Workflow', icon: Workflow, route: '/workflows' },
+              ].map(({ label, icon: Icon, route }) => (
                 <button
                   key={label}
+                  onClick={() => navigate(route)}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
                     bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20
                     transition-all duration-200 hover:scale-[1.03] cursor-pointer"
@@ -437,11 +440,13 @@ export default function Dashboard() {
                   initial={{ opacity: 0, x: 12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.6 + i * 0.05 }}
-                  className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-surface-lighter/50 transition-colors"
+                  onClick={() => s.route && navigate(s.route)}
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-surface-lighter/50 transition-colors ${s.route ? 'cursor-pointer' : ''}`}
                 >
                   <div className="flex items-center gap-2.5">
                     <span className={`w-2.5 h-2.5 rounded-full ${statusDot[s.status]}`} />
-                    <span className="text-text-primary text-sm">{s.name}</span>
+                    <span className={`text-sm ${s.route ? 'text-primary hover:underline' : 'text-text-primary'}`}>{s.name}</span>
+                    {s.route && <ArrowUpRight className="w-3 h-3 text-text-muted" />}
                   </div>
                   <div className="text-right">
                     <span className={`text-xs font-medium ${s.status === 'healthy' ? 'text-emerald-400' : s.status === 'warning' ? 'text-amber-400' : 'text-red-400'}`}>
