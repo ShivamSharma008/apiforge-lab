@@ -2,7 +2,7 @@ name: Deploy APIForge Lab to GitHub Pages
 
 on:
   push:
-    branches: ['apiforge-lab']
+    branches: ['main']
   workflow_dispatch:
 
 permissions:

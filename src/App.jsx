@@ -27,7 +27,7 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/apiforge-lab">
       <div className="min-h-screen flex flex-col bg-surface">
         <Navbar />
         <main className="flex-1">
