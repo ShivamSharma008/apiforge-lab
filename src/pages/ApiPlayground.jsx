@@ -9,15 +9,11 @@ import {
   Clock,
   Loader2,
   History,
-  Play,
   Plus,
   Minus,
-  X,
-  Search,
   Terminal,
   Code2,
   Globe,
-  ArrowRight,
   Zap,
 } from 'lucide-react';
 
@@ -205,9 +201,6 @@ function highlightJson(json) {
 
   const str = typeof json === 'string' ? json : JSON.stringify(json, null, 2);
 
-  const tokenRegex = /("(?:\\.|[^"\\])*")\s*:/g;
-  const parts = [];
-  let lastIndex = 0;
   const raw = str;
 
   // Tokenize the JSON string manually for coloring

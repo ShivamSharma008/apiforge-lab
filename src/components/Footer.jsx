@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Globe, ExternalLink, Mail, User } from 'lucide-react';
 import { motion } from 'framer-motion';

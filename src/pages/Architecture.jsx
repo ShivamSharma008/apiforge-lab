@@ -3,8 +3,8 @@ import { motion, useInView } from 'framer-motion';
 import {
   Monitor, Globe, Shield, Lock, Gauge, Users, ShoppingCart,
   Package, Database, Server, Radio, Bell, GitBranch, Workflow,
-  ArrowDown, Circle, Zap, Layers, CheckCircle2, Send, Clock,
-  Code2, Palette, HardDrive, FileJson, MemoryStick, Activity,
+  ArrowDown, Zap, Layers, CheckCircle2, Send,
+  Code2, Palette, FileJson, Activity,
   Cpu, Wifi,
 } from 'lucide-react';
 
