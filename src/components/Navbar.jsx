@@ -13,6 +13,7 @@ export default function Navbar() {
     { label: 'Workflows', path: '/workflows' },
     { label: 'Events', path: '/events' },
     { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Docs', path: '/documentation' },
   ];
 
   const getLinkClasses = ({ isActive }) =>

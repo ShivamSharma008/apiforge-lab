@@ -8,6 +8,9 @@ import Dashboard from './pages/Dashboard';
 import DbSandbox from './pages/DbSandbox';
 import Workflows from './pages/Workflows';
 import Events from './pages/Events';
+import Documentation from './pages/Documentation';
+import Architecture from './pages/Architecture';
+import ApiReference from './pages/ApiReference';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -20,6 +23,9 @@ function AnimatedRoutes() {
         <Route path="/workflows" element={<Workflows />} />
         <Route path="/events" element={<Events />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/docs" element={<Documentation />} />
+        <Route path="/architecture" element={<Architecture />} />
+        <Route path="/api-reference" element={<ApiReference />} />
       </Routes>
     </AnimatePresence>
   );

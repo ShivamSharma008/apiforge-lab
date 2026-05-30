@@ -1,36 +1,31 @@
 import React from 'react';
-import { Globe, ExternalLink, Mail } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Globe, ExternalLink, Mail, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
 
-  const footerSections = [
-    {
-      title: 'Platform',
-      links: [
-        { label: 'API Playground', href: '/api-playground' },
-        { label: 'DB Sandbox', href: '/db-sandbox' },
-        { label: 'Workflows', href: '/workflows' },
-        { label: 'Events', href: '/events' },
-      ],
-    },
-    {
-      title: 'Resources',
-      links: [
-        { label: 'Documentation', href: '#' },
-        { label: 'Architecture', href: '#' },
-        { label: 'API Reference', href: '#' },
-      ],
-    },
-    {
-      title: 'Connect',
-      links: [
-        { label: 'GitHub', href: '#', icon: Globe },
-        { label: 'LinkedIn', href: '#', icon: ExternalLink },
-        { label: 'Email', href: '#', icon: Mail },
-      ],
-    },
+  const platformLinks = [
+    { label: 'API Playground', route: '/api-playground' },
+    { label: 'DB Sandbox', route: '/db-sandbox' },
+    { label: 'Workflows', route: '/workflows' },
+    { label: 'Events', route: '/events' },
+  ];
+
+  const resourceLinks = [
+    { label: 'Documentation', route: '/docs' },
+    { label: 'Architecture', route: '/architecture' },
+    { label: 'API Reference', route: '/api-reference' },
+  ];
+
+  const connectLinks = [
+    { label: 'GitHub (APIForge)', href: 'https://github.com/ShivamSharma008/apiforge-lab', icon: Globe },
+    { label: 'GitHub (Portfolio)', href: 'https://github.com/ShivamSharma008/ShivamSharma008.github.io', icon: Globe },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shivamsharma-sdet/', icon: ExternalLink },
+    { label: 'Portfolio', href: 'https://shivamsharma008.github.io/', icon: User },
+    { label: 'Email', href: 'mailto:Shivamapril8@gmail.com', icon: Mail },
   ];
 
   const containerVariants = {
@@ -90,38 +85,82 @@ export default function Footer() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12"
+          className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10 mb-12"
         >
-          {footerSections.map((section) => (
-            <motion.div
-              key={section.title}
-              variants={itemVariants}
-              className="space-y-4"
-            >
-              <h3 className="text-primary font-semibold text-lg tracking-wide">
-                {section.title}
-              </h3>
-              <ul className="space-y-3">
-                {section.links.map((link) => (
-                  <motion.li
-                    key={link.label}
-                    whileHover={{ x: 4 }}
-                    transition={{ duration: 0.2 }}
+          {/* Platform */}
+          <motion.div variants={itemVariants} className="space-y-4">
+            <h3 className="text-primary font-semibold text-lg tracking-wide">Platform</h3>
+            <ul className="space-y-3">
+              {platformLinks.map((link) => (
+                <motion.li key={link.label} whileHover={{ x: 4 }} transition={{ duration: 0.2 }}>
+                  <button
+                    onClick={() => navigate(link.route)}
+                    className="text-gray-400 hover:text-accent transition-colors duration-300 cursor-pointer"
                   >
-                    <a
-                      href={link.href}
-                      className="text-gray-400 hover:text-accent transition-colors duration-300 flex items-center gap-2 group"
-                    >
-                      {link.icon && (
-                        <link.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                      )}
-                      <span>{link.label}</span>
-                    </a>
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+                    {link.label}
+                  </button>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Resources */}
+          <motion.div variants={itemVariants} className="space-y-4">
+            <h3 className="text-primary font-semibold text-lg tracking-wide">Resources</h3>
+            <ul className="space-y-3">
+              {resourceLinks.map((link) => (
+                <motion.li key={link.label} whileHover={{ x: 4 }} transition={{ duration: 0.2 }}>
+                  <button
+                    onClick={() => {
+                      const base = window.location.origin + window.location.pathname;
+                      window.open(`${base}#${link.route}`, '_blank');
+                    }}
+                    className="text-gray-400 hover:text-accent transition-colors duration-300 cursor-pointer flex items-center gap-1.5"
+                  >
+                    <span>{link.label}</span>
+                    <ExternalLink className="w-3 h-3 opacity-50" />
+                  </button>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Connect */}
+          <motion.div variants={itemVariants} className="space-y-4">
+            <h3 className="text-primary font-semibold text-lg tracking-wide">Connect</h3>
+            <ul className="space-y-3">
+              {connectLinks.map((link) => (
+                <motion.li key={link.label} whileHover={{ x: 4 }} transition={{ duration: 0.2 }}>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-accent transition-colors duration-300 flex items-center gap-2 group"
+                  >
+                    {link.icon && <link.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />}
+                    <span>{link.label}</span>
+                  </a>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* About */}
+          <motion.div variants={itemVariants} className="space-y-4">
+            <h3 className="text-primary font-semibold text-lg tracking-wide">About</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              APIForge Lab is a comprehensive platform for learning and testing APIs, databases, workflows, and event-driven systems — built by Senior SDET Shivam Sharma.
+            </p>
+            <a
+              href="https://shivamsharma008.github.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 text-sm font-medium transition-all duration-200"
+            >
+              <User className="w-4 h-4" />
+              Visit Portfolio
+            </a>
+          </motion.div>
         </motion.div>
 
         {/* Divider */}

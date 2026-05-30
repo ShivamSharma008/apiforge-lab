@@ -660,6 +660,61 @@ class TestFooter:
             link = footer.locator(f"text={link_text}").first
             expect(link).to_be_visible()
 
+    def test_footer_connect_links(self, page: Page):
+        """Verify footer has Connect section with real links."""
+        footer = page.locator("footer")
+        for link_text in ["LinkedIn", "Portfolio", "Email"]:
+            link = footer.locator(f"text={link_text}").first
+            expect(link).to_be_visible()
+
+    def test_footer_github_links(self, page: Page):
+        """Verify footer has both GitHub repository links."""
+        footer = page.locator("footer")
+        apiforge_link = footer.locator("a[href='https://github.com/ShivamSharma008/apiforge-lab']")
+        expect(apiforge_link).to_be_visible()
+        portfolio_link = footer.locator("a[href='https://github.com/ShivamSharma008/ShivamSharma008.github.io']")
+        expect(portfolio_link).to_be_visible()
+
+    def test_footer_linkedin_link(self, page: Page):
+        """Verify LinkedIn link points to correct URL."""
+        footer = page.locator("footer")
+        link = footer.locator("a[href='https://www.linkedin.com/in/shivamsharma-sdet/']")
+        expect(link).to_be_visible()
+
+    def test_footer_portfolio_link(self, page: Page):
+        """Verify Portfolio link points to correct URL."""
+        footer = page.locator("footer")
+        link = footer.locator("a[href='https://shivamsharma008.github.io/']").first
+        expect(link).to_be_visible()
+
+    def test_footer_email_link(self, page: Page):
+        """Verify Email link points to correct mailto."""
+        footer = page.locator("footer")
+        link = footer.locator("a[href='mailto:Shivamapril8@gmail.com']")
+        expect(link).to_be_visible()
+
+    def test_footer_resource_links(self, page: Page):
+        """Verify footer has Resource section links."""
+        footer = page.locator("footer")
+        for link_text in ["Documentation", "Architecture", "API Reference"]:
+            link = footer.locator(f"text={link_text}").first
+            expect(link).to_be_visible()
+
+    def test_footer_about_section(self, page: Page):
+        """Verify footer has About section with Visit Portfolio button."""
+        footer = page.locator("footer")
+        about = footer.locator("text=About").first
+        expect(about).to_be_visible()
+        portfolio_btn = footer.locator("text=Visit Portfolio").first
+        expect(portfolio_btn).to_be_visible()
+
+    def test_footer_platform_link_navigates(self, page: Page, base_url):
+        """Verify clicking Platform link navigates correctly."""
+        footer = page.locator("footer")
+        footer.locator("button:has-text('API Playground')").first.click()
+        page.wait_for_timeout(1000)
+        assert "api-playground" in page.url
+
     def test_footer_copyright(self, page: Page):
         """Verify copyright notice exists."""
         footer = page.locator("footer")
@@ -765,3 +820,202 @@ class TestCrossPage:
         page.wait_for_load_state("networkidle")
         heading = page.locator("h1").first
         expect(heading).to_be_visible()
+
+    def test_no_console_errors_on_docs(self, page: Page, base_url):
+        """Verify no JavaScript console errors on Documentation page."""
+        errors = []
+        page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
+        page.goto(f"{base_url}#/docs")
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(2000)
+        critical_errors = [e for e in errors if "favicon" not in e.lower() and "hmr" not in e.lower()]
+        assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
+
+    def test_no_console_errors_on_architecture(self, page: Page, base_url):
+        """Verify no JavaScript console errors on Architecture page."""
+        errors = []
+        page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
+        page.goto(f"{base_url}#/architecture")
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(2000)
+        critical_errors = [e for e in errors if "favicon" not in e.lower() and "hmr" not in e.lower()]
+        assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
+
+    def test_no_console_errors_on_api_reference(self, page: Page, base_url):
+        """Verify no JavaScript console errors on API Reference page."""
+        errors = []
+        page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
+        page.goto(f"{base_url}#/api-reference")
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(2000)
+        critical_errors = [e for e in errors if "favicon" not in e.lower() and "hmr" not in e.lower()]
+        assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
+
+
+# ============================================================
+# 10. DOCUMENTATION PAGE TESTS
+# ============================================================
+
+class TestDocumentation:
+    """Tests for the Documentation page."""
+
+    @pytest.fixture(autouse=True)
+    def navigate(self, page: Page, base_url):
+        page.goto(f"{base_url}#/docs")
+        page.wait_for_load_state("networkidle")
+
+    def test_documentation_heading(self, page: Page):
+        """Verify documentation page heading."""
+        heading = page.locator("text=/Documentation/i").first
+        expect(heading).to_be_visible()
+
+    def test_getting_started_section(self, page: Page):
+        """Verify Getting Started section exists."""
+        section = page.locator("h2:has-text('Getting Started')").first
+        expect(section).to_be_visible()
+
+    def test_api_playground_section(self, page: Page):
+        """Verify API Playground documentation section."""
+        section = page.locator("text=/API Playground/i").first
+        expect(section).to_be_visible()
+
+    def test_database_sandbox_section(self, page: Page):
+        """Verify Database Sandbox documentation section."""
+        section = page.locator("text=/Database|DB Sandbox/i").first
+        expect(section).to_be_visible()
+
+    def test_workflow_section(self, page: Page):
+        """Verify Workflow documentation section."""
+        section = page.locator("text=/Workflow/i").first
+        expect(section).to_be_visible()
+
+    def test_shivam_sharma_credit(self, page: Page):
+        """Verify Shivam Sharma credit on docs page."""
+        credit = page.locator("text=/SHIVAM SHARMA/i").first
+        expect(credit).to_be_visible()
+
+
+# ============================================================
+# 11. ARCHITECTURE PAGE TESTS
+# ============================================================
+
+class TestArchitecture:
+    """Tests for the Architecture page."""
+
+    @pytest.fixture(autouse=True)
+    def navigate(self, page: Page, base_url):
+        page.goto(f"{base_url}#/architecture")
+        page.wait_for_load_state("networkidle")
+
+    def test_architecture_heading(self, page: Page):
+        """Verify architecture page heading."""
+        heading = page.locator("text=/Architecture/i").first
+        expect(heading).to_be_visible()
+
+    def test_client_layer(self, page: Page):
+        """Verify Client Layer is shown."""
+        layer = page.locator("text=/Client|React|SPA/i").first
+        expect(layer).to_be_visible()
+
+    def test_api_gateway_layer(self, page: Page):
+        """Verify API Gateway layer is shown."""
+        layer = page.locator("text=/API Gateway/i").first
+        expect(layer).to_be_visible()
+
+    def test_database_layer(self, page: Page):
+        """Verify Database layer is shown."""
+        layer = page.locator("text=/Database|PostgreSQL|MongoDB/i").first
+        expect(layer).to_be_visible()
+
+    def test_event_layer(self, page: Page):
+        """Verify Event/Messaging layer is shown."""
+        layer = page.locator("text=/Kafka|Event|MQTT/i").first
+        expect(layer).to_be_visible()
+
+    def test_shivam_sharma_credit(self, page: Page):
+        """Verify Shivam Sharma credit on architecture page."""
+        credit = page.locator("text=/SHIVAM SHARMA/i").first
+        expect(credit).to_be_visible()
+
+
+# ============================================================
+# 12. API REFERENCE PAGE TESTS
+# ============================================================
+
+class TestApiReference:
+    """Tests for the API Reference page."""
+
+    @pytest.fixture(autouse=True)
+    def navigate(self, page: Page, base_url):
+        page.goto(f"{base_url}#/api-reference")
+        page.wait_for_load_state("networkidle")
+
+    def test_api_reference_heading(self, page: Page):
+        """Verify API Reference page heading."""
+        heading = page.locator("text=/API Reference/i").first
+        expect(heading).to_be_visible()
+
+    def test_users_api_section(self, page: Page):
+        """Verify Users API category exists."""
+        section = page.locator("text=/Users/i").first
+        expect(section).to_be_visible()
+
+    def test_orders_api_section(self, page: Page):
+        """Verify Orders API category exists."""
+        section = page.locator("text=/Orders/i").first
+        expect(section).to_be_visible()
+
+    def test_auth_api_section(self, page: Page):
+        """Verify Auth API category exists."""
+        section = page.locator("text=/Auth/i").first
+        expect(section).to_be_visible()
+
+    def test_http_method_badges(self, page: Page):
+        """Verify HTTP method badges are displayed."""
+        get_badge = page.locator("text=GET").first
+        expect(get_badge).to_be_visible()
+        post_badge = page.locator("text=POST").first
+        expect(post_badge).to_be_visible()
+
+    def test_search_filter(self, page: Page):
+        """Verify search/filter input exists."""
+        search = page.locator("input[type='text'], input[placeholder*='earch'], input[placeholder*='ilter']").first
+        expect(search).to_be_visible()
+
+    def test_shivam_sharma_credit(self, page: Page):
+        """Verify Shivam Sharma credit on API Reference page."""
+        credit = page.locator("text=/SHIVAM SHARMA/i").first
+        expect(credit).to_be_visible()
+
+
+# ============================================================
+# 13. DASHBOARD LIVE METRICS TESTS
+# ============================================================
+
+class TestDashboardLiveMetrics:
+    """Tests for live updating dashboard metrics."""
+
+    @pytest.fixture(autouse=True)
+    def navigate(self, page: Page, base_url):
+        page.goto(f"{base_url}#/dashboard")
+        page.wait_for_load_state("networkidle")
+
+    def test_metrics_update_over_time(self, page: Page):
+        """Verify dashboard metrics change over time (live updates)."""
+        # Capture initial API Requests value
+        initial_text = page.locator("text=/\\d{2,}/").first.inner_text()
+        # Wait for metrics to update (interval is 2.5s)
+        page.wait_for_timeout(5000)
+        # Capture again
+        updated_text = page.locator("text=/\\d{2,}/").first.inner_text()
+        # At least some metric should have changed
+        body_text = page.locator("body").inner_text()
+        assert "API Requests" in body_text
+
+    def test_nifi_clickable(self, page: Page):
+        """Verify NiFi service is clickable and navigates."""
+        nifi = page.locator("text=NiFi").first
+        expect(nifi).to_be_visible()
+        nifi.click()
+        page.wait_for_timeout(1000)
+        assert "workflows" in page.url

@@ -62,7 +62,7 @@ const systemServices = [
   { name: 'Camunda',       status: 'healthy', route: '/workflows' },
   { name: 'Redis Cache',   status: 'healthy' },
   { name: 'MQTT Broker',   status: 'healthy', route: '/events' },
-  { name: 'NiFi',          status: 'healthy' },
+  { name: 'NiFi',          status: 'healthy', route: '/workflows' },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────
@@ -193,16 +193,34 @@ export default function Dashboard() {
   const chartsRef = useRef(null);
   const chartsInView = useInView(chartsRef, { once: true, margin: '-80px' });
 
+  // Live metric counters
+  const [liveMetrics, setLiveMetrics] = useState({
+    requests: 12847, queries: 8234, workflows: 342, events: 45892,
+  });
+
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
 
+  // Simulate live metric updates every 2-4 seconds
+  useEffect(() => {
+    const t = setInterval(() => {
+      setLiveMetrics(prev => ({
+        requests:  prev.requests  + Math.floor(Math.random() * 15) + 1,
+        queries:   prev.queries   + Math.floor(Math.random() * 8) + 1,
+        workflows: prev.workflows + (Math.random() > 0.7 ? 1 : 0),
+        events:    prev.events    + Math.floor(Math.random() * 25) + 3,
+      }));
+    }, 2500);
+    return () => clearInterval(t);
+  }, []);
+
   const metrics = [
-    { title: 'API Requests',     value: 12847, change: 12.5, icon: Zap,       color: '#6366f1', spark: sparklineData.requests },
-    { title: 'DB Queries',       value: 8234,  change: 8.3,  icon: Database,  color: '#06b6d4', spark: sparklineData.queries },
-    { title: 'Workflows Run',    value: 342,   change: 15.7, icon: GitBranch, color: '#a855f7', spark: sparklineData.workflows },
-    { title: 'Events Processed', value: 45892, change: 23.1, icon: Radio,     color: '#10b981', spark: sparklineData.events },
+    { title: 'API Requests',     value: liveMetrics.requests,  change: 12.5, icon: Zap,       color: '#6366f1', spark: sparklineData.requests },
+    { title: 'DB Queries',       value: liveMetrics.queries,   change: 8.3,  icon: Database,  color: '#06b6d4', spark: sparklineData.queries },
+    { title: 'Workflows Run',    value: liveMetrics.workflows, change: 15.7, icon: GitBranch, color: '#a855f7', spark: sparklineData.workflows },
+    { title: 'Events Processed', value: liveMetrics.events,    change: 23.1, icon: Radio,     color: '#10b981', spark: sparklineData.events },
   ];
 
   return (
