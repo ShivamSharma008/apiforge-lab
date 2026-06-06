@@ -1,0 +1,34 @@
+# APIForge Lab — AI Assistant dependencies
+#
+# The assistant runs FULLY OFFLINE with ZERO of these installed (pure-Python
+# fallbacks for embeddings, vector search, generation, and the agent graph).
+# Install extras below to unlock higher-quality / production features.
+
+# --- API + CLI (recommended: enables the REST server & React chat widget) ---
+fastapi>=0.110
+uvicorn[standard]>=0.27
+httpx>=0.27            # used by the CLI HTTP client + tests
+
+# --- RAG quality (optional): local embeddings + fast vector search ----------
+# sentence-transformers>=2.6
+# faiss-cpu>=1.8
+# numpy>=1.26
+
+# --- LangChain / LangGraph orchestration (optional) -------------------------
+# langchain>=0.2
+# langchain-core>=0.2
+# langgraph>=0.1
+# langchain-openai>=0.1        # only if using the OpenAI/Azure backend
+# langchain-anthropic>=0.1     # only if using the Anthropic backend
+
+# --- Observability (optional): LangSmith tracing ----------------------------
+# langsmith>=0.1
+
+# --- Evaluation (optional): DeepEval --------------------------------------
+# deepeval>=0.21
+
+# --- Fine-tuning (optional, heavy): instruction/SFT pipeline ----------------
+# transformers>=4.40
+# datasets>=2.19
+# peft>=0.11
+# accelerate>=0.30

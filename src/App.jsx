@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ChatWidget from './components/chat/ChatWidget';
 import Landing from './pages/Landing';
 import ApiPlayground from './pages/ApiPlayground';
 import Dashboard from './pages/Dashboard';
@@ -40,6 +41,7 @@ function App() {
           <AnimatedRoutes />
         </main>
         <Footer />
+        <ChatWidget />
       </div>
     </HashRouter>
   );

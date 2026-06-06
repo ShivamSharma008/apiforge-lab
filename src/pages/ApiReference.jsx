@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
+import { useClipboard } from '../hooks';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   Search,
@@ -482,14 +483,9 @@ function AnimatedSection({ children, className = '', custom = 0 }) {
 
 /* ───────────────── code block with copy ───────────────── */
 function CodeBlock({ title, code }) {
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useClipboard(2000);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
+  const handleCopy = () => copy(code);
 
   return (
     <div className="mt-3">
